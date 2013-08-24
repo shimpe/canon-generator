@@ -338,7 +338,7 @@ if __name__ == "__main__":
   stacking = 1
   # define extra transpositions for different voices (e.g. +12, -24, ...)
   # note that the currently implemented method only gives good results with multiples of 12
-  voice_transpositions = { VOICE1 : +12, VOICE2 : 0, VOICE3 : -12, VOICE4: -24, VOICE5: 0 } 
+  voice_transpositions = { VOICE1 : 0, VOICE2 : 0, VOICE3 : -12, VOICE4: -24, VOICE5: -12 } 
   ############################################################################
   #
   # END OF USER EDITABLE CODE
