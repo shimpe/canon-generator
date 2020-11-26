@@ -23,7 +23,7 @@ def pairwise(iterable):
 
   s -> (s[0], s[1]), (s[1], s[2]), (s[2], s[3]), ..., (s[Last], None)
   """
-  return zip(iterable, iterable[1:]) + [(iterable[-1], None)]
+  return list(zip(iterable, iterable[1:])) + [(iterable[-1], None)]
 
 def median(lst, if_even_length_use_upper_element=False):
   """ return the median of a list """
@@ -37,13 +37,13 @@ def median(lst, if_even_length_use_upper_element=False):
 
   if length % 2 != 0:
     # median of a list with odd lenght is well-defined
-    return lst[(length-1)/2]
+    return lst[(length-1)//2]
   else:
     # median of a list with even length is a bit tricky
     if not if_even_length_use_upper_element:
-      return lst[(length-1)/2]
+      return lst[(length-1)//2]
     else:
-      return lst[(length)/2]
+      return lst[(length)//2]
 
 def realize_chord(chordstring, numofpitch=3, baseoctave=4, direction="ascending"):
   """
@@ -51,7 +51,7 @@ def realize_chord(chordstring, numofpitch=3, baseoctave=4, direction="ascending"
   if direction == "descending", reverse the list of pitches before returning them
   """
   pitches = music21.harmony.ChordSymbol(chordstring).pitches
-  num_iter = numofpitch/len(pitches)+1
+  num_iter = numofpitch//len(pitches)+1
   octave_correction = baseoctave - pitches[0].octave
   result = []
   actual_pitches = 0
@@ -299,6 +299,7 @@ def serialize_stream(stream, repeats=1):
       new_stream.append(copy.deepcopy(part.flat.elements))
   return new_stream, length
 
+
 def canon(serialized_stream, delay, voices, extra_transposition_map={}):
   """
   function that takes serialized stream and sequences it against
@@ -311,7 +312,9 @@ def canon(serialized_stream, delay, voices, extra_transposition_map={}):
     interval = 0
     if i in extra_transposition_map:
       interval = extra_transposition_map[i]
-    new_stream.insert(total_length, copy.deepcopy(serialized_stream).transpose(interval))
+    part = music21.stream.Part()
+    part.insert(total_length, copy.deepcopy(serialized_stream).transpose(interval))
+    new_stream.insert(0, part)
     total_length += delay
   return new_stream
 
@@ -323,6 +326,7 @@ if __name__ == "__main__":
   #
   ############################################################################
   # define a chord progression that serves as basis for the canon (change this!)
+  path_to_musescore = '' # change as needed; leave empty to use default settings
   chords = "C F Am Dm G C"
   # scale in which to interpret these chords
   scale = music21.scale.MajorScale("C")
@@ -377,14 +381,17 @@ if __name__ == "__main__":
  
   # debug code: visualize the spiced up chords, and allow the user to abort
   # canon generation if the result is too horrible
+  if path_to_musescore:
+    music21.environment.set('musicxmlPath', path_to_musescore)
   spiced_streams[-1].show("musicxml")
   answer = None
   while answer not in ['y','Y','n','N']:
-    answer = raw_input("continue to generate canon from this spiced up chord progression? [y/n]: ")
+    answer = input("continue to generate canon from this spiced up chord progression? [y/n]: ")
 
   if answer in [ 'y', 'Y' ]:
     # unfold the final spiced up chord progression into a serialized stream
     ser, delay = serialize_stream(spiced_streams[-1])
+    #ser.show('musicxml')
 
     # and turn it into a canon. Add extra transpositions to some voices to create some diversity
     canonized = canon(ser, delay, voices*stacking, voice_transpositions) 
