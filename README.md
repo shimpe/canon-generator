@@ -1,9 +1,9 @@
 canon-generator
 ===============
 
-Canon-generator: algorithmic composition using music21 and python
+Canon-generator: algorithmic composition using music21, scamp, abjad and python
 * Written by Stefaan Himpe - 2013
-* Revised to use python 3.8 and music21 6.3.0 - 2020 (known problem: generated xml is invalid, but can be loaded by musescore anyway...)
+* Revised to use python 3.8 and music21 6.3.0 - 2020 **NOTE: canon-generator now also depends on the scamp library to generate the final notation**
 
 Code available under GPLv3. 
 
